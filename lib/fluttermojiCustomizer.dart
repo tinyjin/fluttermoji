@@ -37,6 +37,7 @@ class FluttermojiCustomizer extends StatefulWidget {
     FluttermojiThemeData? theme,
     List<String>? attributeTitles,
     List<String>? selectedAttributes,
+    Map<String, List<int>>? selectedItems,
     List<String>? attributeIcons,
     TapCallback? onTap,
     this.autosave = true,
@@ -53,12 +54,14 @@ class FluttermojiCustomizer extends StatefulWidget {
         this.theme = theme ?? FluttermojiThemeData.standard,
         this.attributeTitles = attributeTitles ?? defaultAttributeTitles,
         this.attributeIcons = attributeIcons ?? defaultAttributeIcons,
-        this.selectedAttributes = selectedAttributes ?? attributeKeys, 
+        this.selectedAttributes = selectedAttributes ?? attributeKeys,
+        this.selectedItems = selectedItems ?? {},
         this.onTap = onTap,
         super(key: key);
 
   final TapCallback? onTap;
   final List<String> selectedAttributes;
+  final Map<String, List<int>> selectedItems;
 
   final double? scaffoldHeight;
   final double? scaffoldWidth;
@@ -249,9 +252,12 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
 
       /// Number of options available for said [attribute]
       /// Eg: "Hairstyle" attribue has 38 options
-      var attributeListLength =
-          fluttermojiProperties[attribute.key!]!.property!.length;
-
+      var attributeListLength = fluttermojiProperties[attribute.key!]!.property!.length;
+      bool hasLimited = widget.selectedItems.containsKey(attribute.key);
+      if (hasLimited) {
+        attributeListLength = widget.selectedItems[attribute.key]?.length ?? attributeListLength;
+      }
+      
       /// Number of tiles per horizontal row,
       int gridCrossAxisCount;
 
@@ -275,24 +281,31 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
           crossAxisSpacing: 4.0,
           mainAxisSpacing: 4.0,
         ),
-        itemBuilder: (BuildContext context, int index) => InkWell(
-          onTap: () => onTapOption(index, i, attribute),
-          child: Container(
-            decoration: index == i
-                ? widget.theme.selectedTileDecoration
-                : widget.theme.unselectedTileDecoration,
-            margin: widget.theme.tileMargin,
-            padding: widget.theme.tilePadding,
-            child: SvgPicture.string(
-              fluttermojiController.getComponentSVG(attribute.key, index),
-              height: 20,
-              semanticsLabel: 'Your Fluttermoji',
-              placeholderBuilder: (context) => Center(
-                child: CupertinoActivityIndicator(),
+        itemBuilder: (BuildContext context, int _index) {
+          int index = _index;
+          if (hasLimited) {
+            index = widget.selectedItems[attribute.key]?[_index] ?? _index;
+          }
+          
+          return InkWell(
+            onTap: () => onTapOption(index, i, attribute),
+            child: Container(
+              decoration: index == i
+                  ? widget.theme.selectedTileDecoration
+                  : widget.theme.unselectedTileDecoration,
+              margin: widget.theme.tileMargin,
+              padding: widget.theme.tilePadding,
+              child: SvgPicture.string(
+                fluttermojiController.getComponentSVG(attribute.key, index),
+                height: 20,
+                semanticsLabel: 'Your Fluttermoji',
+                placeholderBuilder: (context) => Center(
+                  child: CupertinoActivityIndicator(),
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       );
 
       /// Builds the icon for the attribute to be placed in the bottom row
