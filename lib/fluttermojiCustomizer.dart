@@ -14,6 +14,9 @@ import 'fluttermojiController.dart';
 ///Note: \
 /// It is advised that a [FluttermojiCircleAvatar] also be present in the same page.
 /// to show the user a preview of the changes being made.
+
+typedef TapCallback = void Function(int index, int? i, AttributeItem attribute);
+
 class FluttermojiCustomizer extends StatefulWidget {
   /// Creates a widget UI to customize the Fluttermoji
   ///
@@ -34,6 +37,7 @@ class FluttermojiCustomizer extends StatefulWidget {
     FluttermojiThemeData? theme,
     List<String>? attributeTitles,
     List<String>? attributeIcons,
+    TapCallback? onTap,
     this.autosave = true,
   })  : assert(
           attributeTitles == null || attributeTitles.length == attributesCount,
@@ -48,7 +52,10 @@ class FluttermojiCustomizer extends StatefulWidget {
         this.theme = theme ?? FluttermojiThemeData.standard,
         this.attributeTitles = attributeTitles ?? defaultAttributeTitles,
         this.attributeIcons = attributeIcons ?? defaultAttributeIcons,
+        this.onTap = onTap,
         super(key: key);
+
+  final TapCallback? onTap;
 
   final double? scaffoldHeight;
   final double? scaffoldWidth;
@@ -130,6 +137,10 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
       });
       fluttermojiController.updatePreview();
       if (widget.autosave) fluttermojiController.setFluttermoji();
+    }
+
+    if (widget.onTap != null) {
+      widget.onTap!(index, i, attribute);
     }
   }
 
