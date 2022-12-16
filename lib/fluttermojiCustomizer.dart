@@ -36,6 +36,7 @@ class FluttermojiCustomizer extends StatefulWidget {
     this.scaffoldWidth,
     FluttermojiThemeData? theme,
     List<String>? attributeTitles,
+    List<String>? selectedAttributes,
     List<String>? attributeIcons,
     TapCallback? onTap,
     this.autosave = true,
@@ -52,10 +53,12 @@ class FluttermojiCustomizer extends StatefulWidget {
         this.theme = theme ?? FluttermojiThemeData.standard,
         this.attributeTitles = attributeTitles ?? defaultAttributeTitles,
         this.attributeIcons = attributeIcons ?? defaultAttributeIcons,
+        this.selectedAttributes = selectedAttributes ?? attributeKeys, 
         this.onTap = onTap,
         super(key: key);
 
   final TapCallback? onTap;
+  final List<String> selectedAttributes;
 
   final double? scaffoldHeight;
   final double? scaffoldWidth;
@@ -165,11 +168,12 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
       width: widget.scaffoldWidth ?? size.width,
       child: body(
         attributes: List<AttributeItem>.generate(
-            attributesCount,
+            widget.selectedAttributes.length,
             (index) => AttributeItem(
-                iconAsset: widget.attributeIcons[index],
-                title: widget.attributeTitles[index],
-                key: attributeKeys[index]),
+                iconAsset: widget.attributeIcons[attributeKeys.indexOf(widget.selectedAttributes[index]!) ?? 0],
+                title: widget.attributeTitles[attributeKeys.indexOf(widget.selectedAttributes[index]!) ?? 0],
+                key: widget.selectedAttributes[index],
+            ),
             growable: false),
       ),
     );
