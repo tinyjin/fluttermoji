@@ -188,7 +188,7 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
       color: widget.theme.primaryBgColor,
       child: TabBar(
         controller: tabController,
-        isScrollable: true,
+        // isScrollable: true,
         labelPadding: EdgeInsets.fromLTRB(0, 8, 0, 8),
         indicatorColor: widget.theme.selectedIconColor,
         indicatorPadding: EdgeInsets.all(2),
