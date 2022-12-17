@@ -108,7 +108,7 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
     with SingleTickerProviderStateMixin {
   late FluttermojiController fluttermojiController;
   late TabController tabController;
-  final attributesCount = 11;
+  late int attributesCount;
   var heightFactor = 0.4, widthFactor = 0.95;
 
   @override
@@ -120,7 +120,8 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
     _fluttermojiController = Get.find<FluttermojiController>();
 
     setState(() {
-      tabController = TabController(length: attributesCount, vsync: this);
+      attributesCount = widget.selectedAttributes.length;
+      tabController = TabController(length: widget.selectedAttributes.length, vsync: this);
       fluttermojiController = _fluttermojiController;
     });
 
@@ -242,10 +243,14 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
     var attributeGrids = <Widget>[];
     var navbarWidgets = <Widget>[];
 
-    for (var attributeIndex = 0;
-        attributeIndex < attributes.length;
-        attributeIndex++) {
+    for (var _attributeIndex = 0;
+        _attributeIndex < widget.selectedAttributes.length;
+        _attributeIndex++) {
+      var attributeName = widget.selectedAttributes[_attributeIndex]!;
+      var attributeIndex = attributes.indexWhere((element) => element.key == attributeName)!;
+
       var attribute = attributes[attributeIndex];
+
       if (!fluttermojiController.selectedOptions.containsKey(attribute.key)) {
         fluttermojiController.selectedOptions[attribute.key] = 0;
       }
@@ -257,7 +262,7 @@ class _FluttermojiCustomizerState extends State<FluttermojiCustomizer>
       if (hasLimited) {
         attributeListLength = widget.selectedItems[attribute.key]?.length ?? attributeListLength;
       }
-      
+
       /// Number of tiles per horizontal row,
       int gridCrossAxisCount;
 
